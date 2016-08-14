@@ -137,7 +137,7 @@ namespace SqlSugar
         /// <returns></returns>
         public string TableNameToClass(SqlSugarClient db, string tableName)
         {
-            var dt = db.GetDataTable(string.Format("select top 1 * from {0}", tableName));
+            var dt = db.GetDataTable(string.Format("select   * from {0} limit 0,1", tableName));
             var tableColumns = GetTableColumns(db, tableName);
             var reval = DataTableToClass(dt, tableName, null, tableColumns);
             return reval;
@@ -161,7 +161,7 @@ namespace SqlSugar
                 foreach (DataRow dr in tables.Rows)
                 {
                     string tableName = dr["name"].ToString();
-                    var currentTable = db.GetDataTable(string.Format("select top 1 * from {0}", tableName));
+                    var currentTable = db.GetDataTable(string.Format("select  * from {0} limit 0,1", tableName));
                     if (callBack != null)
                     {
                         var tableColumns = GetTableColumns(db, tableName);
@@ -200,7 +200,7 @@ namespace SqlSugar
                 foreach (DataRow dr in tables.Rows)
                 {
                     string tableName = dr["name"].ToString();
-                    var currentTable = db.GetDataTable(string.Format("select top 1 * from {0}", tableName));
+                    var currentTable = db.GetDataTable(string.Format("select  * from {0} limit 0,1", tableName));
                     string className = db.GetClassTypeByTableName(tableName);
                     callBack(tables, className, tableName);
                 }
@@ -213,20 +213,10 @@ namespace SqlSugar
         /// <returns></returns>
         private static string GetCreateClassSql(bool? tableOrView)
         {
-            string sql = null;
-            if (tableOrView == null)
-            {
-                sql = "select name from sysobjects where xtype in ('U','V') ";
-            }
-            else if (tableOrView == true)
-            {
-                sql = "select name from sysobjects where xtype in ('U') ";
-            }
-            else
-            {
-                sql = "select name from sysobjects where xtype in ('V') ";
-            }
-            return sql;
+            
+            return @"SELECT name FROM sqlite_master
+WHERE type='table'
+ORDER BY name;";
         }
 
 
@@ -347,27 +337,7 @@ namespace SqlSugar
         // 获取表结构信息
         public List<PubModel.DataTableMap> GetTableColumns(SqlSugarClient db, string tableName)
         {
-            string sql = @"SELECT  Sysobjects.name AS TABLE_NAME ,
-								syscolumns.Id  AS TABLE_ID,
-								syscolumns.name AS COLUMN_NAME ,
-								systypes.name AS DATA_TYPE ,
-								syscolumns.length AS CHARACTER_MAXIMUM_LENGTH ,
-								sys.extended_properties.[value] AS COLUMN_DESCRIPTION ,
-								syscomments.text AS COLUMN_DEFAULT ,
-								syscolumns.isnullable AS IS_NULLABLE
-								FROM    syscolumns
-								INNER JOIN systypes ON syscolumns.xtype = systypes.xtype
-								LEFT JOIN sysobjects ON syscolumns.id = sysobjects.id
-								LEFT OUTER JOIN sys.extended_properties ON ( sys.extended_properties.minor_id = syscolumns.colid
-																			 AND sys.extended_properties.major_id = syscolumns.id
-																		   )
-								LEFT OUTER JOIN syscomments ON syscolumns.cdefault = syscomments.id
-								WHERE   syscolumns.id IN ( SELECT   id
-												   FROM     SYSOBJECTS
-												   WHERE    xtype in( 'U','V') )
-								AND ( systypes.name <> 'sysname' ) AND Sysobjects.name='" + tableName + "'  AND systypes.name<>'geometry' AND systypes.name<>'geography'  ORDER BY syscolumns.colid";
-
-            return db.SqlQuery<PubModel.DataTableMap>(sql);
+            return null;
         }
     }
 

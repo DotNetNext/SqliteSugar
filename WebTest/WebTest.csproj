@@ -50,6 +50,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.SQLite, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SqlSugar\Lib\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
@@ -66,15 +70,12 @@
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\单库模式DEMO脚本.sql" />
-    <Content Include="App_Data\多库模式数据库结构脚本cloudDB %281%29.sql" />
     <Content Include="App_Lib\SqlSugar.dll" />
     <Content Include="App_Lib\SqlSugar.XML" />
     <Content Include="App_Lib\SyntacticSugar.dll" />
     <Content Include="App_Lib\SyntacticSugar.XML" />
     <Content Include="BuilderClass.aspx" />
     <Content Include="Demos\Ado.aspx" />
-    <Content Include="Demos\Cloud.aspx" />
     <Content Include="Demos\CreateModelFile.aspx" />
     <Content Include="Demos\Delete.aspx" />
     <Content Include="Demos\EnumType.aspx" />
@@ -87,20 +88,9 @@
     <Content Include="Demos\Select.aspx" />
     <Content Include="Demos\SerializerDateFormat.aspx" />
     <Content Include="Demos\SerialNumber.aspx" />
-    <Content Include="Demos\SqlPageModel.aspx" />
     <Content Include="Demos\Tran.aspx" />
     <Content Include="Demos\Update.aspx" />
-    <Content Include="PerformanceTest\add_delete_update\Add.aspx" />
-    <Content Include="PerformanceTest\add_delete_update\Update.aspx" />
-    <Content Include="CSS\StyleSheet1.css" />
     <Content Include="Global.asax" />
-    <Content Include="PerformanceTest\lambda\Test.aspx" />
-    <Content Include="PerformanceTest\Select\All.aspx" />
-    <Content Include="PerformanceTest\add_delete_update\Del.aspx" />
-    <Content Include="PerformanceTest\Select\ManyTable.aspx" />
-    <Content Include="PerformanceTest\Select\ManyTablePage.aspx" />
-    <Content Include="PerformanceTest\Select\OneWhere.aspx" />
-    <Content Include="PerformanceTest\Select\WherePage.aspx" />
     <Content Include="Demos\T4\SugarTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SugarTemplate.cs</LastGenOutput>
@@ -134,13 +124,6 @@
     </Compile>
     <Compile Include="Demos\Ado.aspx.designer.cs">
       <DependentUpon>Ado.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Demos\Cloud.aspx.cs">
-      <DependentUpon>Cloud.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Demos\Cloud.aspx.designer.cs">
-      <DependentUpon>Cloud.aspx</DependentUpon>
     </Compile>
     <Compile Include="Demos\CreateModelFile.aspx.cs">
       <DependentUpon>CreateModelFile.aspx</DependentUpon>
@@ -226,13 +209,6 @@
     <Compile Include="Demos\SerialNumber.aspx.designer.cs">
       <DependentUpon>SerialNumber.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Demos\SqlPageModel.aspx.cs">
-      <DependentUpon>SqlPageModel.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Demos\SqlPageModel.aspx.designer.cs">
-      <DependentUpon>SqlPageModel.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Demos\Tran.aspx.cs">
       <DependentUpon>Tran.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -253,20 +229,6 @@
     <Compile Include="Models\TestModels.cs" />
     <Compile Include="Models\TestUpdateColumns.cs" />
     <Compile Include="Models\V_LanguageTest.cs" />
-    <Compile Include="PerformanceTest\add_delete_update\Add.aspx.cs">
-      <DependentUpon>Add.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\add_delete_update\Add.aspx.designer.cs">
-      <DependentUpon>Add.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\add_delete_update\Update.aspx.cs">
-      <DependentUpon>Update.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\add_delete_update\Update.aspx.designer.cs">
-      <DependentUpon>Update.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -275,56 +237,7 @@
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\Student_View.cs" />
     <Compile Include="Models\Subject.cs" />
-    <Compile Include="PerformanceTest\add_delete_update\Del.aspx.cs">
-      <DependentUpon>Del.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\add_delete_update\Del.aspx.designer.cs">
-      <DependentUpon>Del.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\lambda\Test.aspx.cs">
-      <DependentUpon>Test.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\lambda\Test.aspx.designer.cs">
-      <DependentUpon>Test.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PerformanceTest\Select\All.aspx.cs">
-      <DependentUpon>All.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\All.aspx.designer.cs">
-      <DependentUpon>All.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\ManyTable.aspx.cs">
-      <DependentUpon>ManyTable.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\ManyTable.aspx.designer.cs">
-      <DependentUpon>ManyTable.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\ManyTablePage.aspx.cs">
-      <DependentUpon>ManyTablePage.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\ManyTablePage.aspx.designer.cs">
-      <DependentUpon>ManyTablePage.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\OneWhere.aspx.cs">
-      <DependentUpon>OneWhere.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\OneWhere.aspx.designer.cs">
-      <DependentUpon>OneWhere.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\WherePage.aspx.cs">
-      <DependentUpon>WherePage.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PerformanceTest\Select\WherePage.aspx.designer.cs">
-      <DependentUpon>WherePage.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -346,7 +259,9 @@
     <Compile Include="TestLib\PerformanceTest.cs" />
     <Compile Include="Models\V_Student.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Site.Master" />
   </ItemGroup>
@@ -357,13 +272,13 @@
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SqlSugar\SqliteSugar.csproj">
       <Project>{46A17E67-7E3E-4369-9B1F-43BA34BBDAEF}</Project>
       <Name>SqliteSugar</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

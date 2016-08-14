@@ -36,7 +36,6 @@ namespace SqlSugar
     /// </summary>
     public enum PageModel
     {
-        RowNumber = 0,
-        Offset = 1
+        Default=0
     }
 }

@@ -95,7 +95,7 @@ namespace SqlSugar
         /// <summary>
         /// 设置分页类型
         /// </summary>
-        public PageModel PageModel = PageModel.RowNumber;
+        public PageModel PageModel = PageModel.Default;
         /// <summary>
         /// 设置多语言配置
         /// </summary>

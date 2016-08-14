@@ -63,13 +63,12 @@ namespace WebTest.Demo
                 //转成json
                 string list4 = db.SqlQueryJson("select * from student");
                 //返回int
-                var list5 = db.SqlQuery<int>("select top 1 id from Student").SingleOrDefault();
+                var list5 = db.SqlQuery<int>("select  id  from Student limit 0,1").SingleOrDefault();
                 //反回键值
                 Dictionary<string, string> list6 = db.SqlQuery<KeyValuePair<string, string>>("select id,name from Student").ToDictionary(it => it.Key, it => it.Value);
                 //反回List<string[]>
-                var list7 = db.SqlQuery<string[]>("select top 1 id,name from Student").SingleOrDefault();
-                //存储过程
-                var spResult = db.SqlQuery<School>("exec sp_school @p1,@p2", new { p1 = 1, p2 = 2 });
+                var list7 = db.SqlQuery<string[]>("select  id,name from Student limit 0,1").SingleOrDefault();
+    
 
                 //获取第一行第一列的值
                 string v1 = db.GetString("select '张三' as name");
@@ -141,10 +140,7 @@ namespace WebTest.Demo
                 {
                     sable = sable.Where("s.id=@id or s.id=100");
                 }
-                if (id > 0)
-                {
-                    sable = sable.Where("l.id in (select top 10 id from school)");//where加子查询
-                }
+   
                 var pars = new { id = id, name = name };
                 int pageCount = sable.Count(pars);
                 var list7 = sable.SelectToPageList<Student>("s.*", "l.id desc", 1, 20, pars);
@@ -161,8 +157,7 @@ namespace WebTest.Demo
 
             using (var db = SugarDao.GetInstance())
             {
-
-
+              
                 //---------Queryable<T>,扩展函数查询---------//
 
                 //针对单表或者视图查询
@@ -243,11 +238,12 @@ namespace WebTest.Demo
                 var list3 = db.Queryable<Student>().In(it => it.id, intList).ToList();
                 var list4 = db.Queryable<Student>().In("id", intList).ToList();
 
+
                 //分组查询
-                var list7 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select("sex,Count=count(*)").ToDynamic();
-                var list8 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).GroupBy(it=>it.id).Select("id,sex,Count=count(*)").ToDynamic();
-                List<SexTotal> list9 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select<Student, SexTotal>("Sex,Count=count(*)").ToList();
-                List<SexTotal> list10 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy("sex").Select<Student, SexTotal>("Sex,Count=count(*)").ToList();
+                var list7 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select("sex,count(*) as Count").ToDynamic();
+                var list8 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).GroupBy(it => it.id).Select("id,sex, count(*) as Count").ToDynamic();
+                List<SexTotal> list9 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select<Student, SexTotal>("CAST (Sex as text) as Sex , count(*) as Count").ToList();
+                List<SexTotal> list10 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy("sex").Select<Student, SexTotal>("sex as Sex, count(*) as Count").ToList();
                 //SELECT Sex,Count=count(*)  FROM Student  WHERE 1=1  AND  (id < 20)    GROUP BY Sex --生成结果
 
             }

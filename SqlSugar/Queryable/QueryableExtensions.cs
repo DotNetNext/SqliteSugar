@@ -331,12 +331,26 @@ namespace SqlSugar
                 TableName = type.Name,
                 GroupBy = queryable.GroupBy
             };
-            reval.Select = Regex.Match(expStr, @"(?<=\{).*?(?=\})").Value;
-            if (reval.Select.IsNullOrEmpty())
+            var selectStr = Regex.Match(expStr, @"(?<=\{).*?(?=\})").Value;
+            var items = selectStr.Split(',');
+            var newItems = new List<string>();
+            if (selectStr.IsNullOrEmpty())
             {
-                reval.Select = Regex.Match(expStr, @"c =>.*?\((.+)\)").Groups[1].Value;
+                items = Regex.Match(expStr, @"c =>.*?\((.+)\)").Groups[1].Value.Split(',');
             }
-            reval.Select = Regex.Replace(reval.Select, @"(?<=\=).*?\.", "");
+            if (items.IsValuable())
+            {
+                foreach (var item in items)
+                {
+                    var itemArray = item.Trim().Split('=');
+                    newItems.Add(itemArray.Last().Split('.').Last() + " AS " + itemArray.First());
+                }
+            }
+            reval.Select = "*";
+            if (newItems.IsValuable())
+            {
+                reval.Select = string.Join(",", newItems);
+            }
             return reval;
         }
         /// <summary>
@@ -377,7 +391,6 @@ namespace SqlSugar
             queryable.Select = select;
             return queryable;
         }
-
 
         /// <summary>
         /// 获取序列总记录数

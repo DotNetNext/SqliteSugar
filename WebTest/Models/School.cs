@@ -7,18 +7,8 @@ namespace Models
     public class School
     {
         
-     /// <summary>
-     /// Desc:- 
-     /// Default:- 
-     /// Nullable:False 
-     /// </summary>
-        public int id {get;set;}
+        public Int64 id {get;set;}
 
-     /// <summary>
-     /// Desc:- 
-     /// Default:- 
-     /// Nullable:True 
-     /// </summary>
         public string name {get;set;}
 
     }

@@ -72,7 +72,7 @@ namespace SqlSugar
         {
             return GetString(sql, SqlSugarTool.GetParameters(pars));
         }
-        public string GetString(string sql, params SqlParameter[] pars)
+        public string GetString(string sql, params SQLiteParameter[] pars)
         {
             return Convert.ToString(GetScalar(sql, pars));
         }
@@ -80,19 +80,19 @@ namespace SqlSugar
         {
             return GetInt(sql, SqlSugarTool.GetParameters(pars));
         }
-        public int GetInt(string sql, params SqlParameter[] pars)
+        public int GetInt(string sql, params SQLiteParameter[] pars)
         {
             return Convert.ToInt32(GetScalar(sql, pars));
         }
-        public Double GetDouble(string sql, params SqlParameter[] pars)
+        public Double GetDouble(string sql, params SQLiteParameter[] pars)
         {
             return Convert.ToDouble(GetScalar(sql, pars));
         }
-        public decimal GetDecimal(string sql, params SqlParameter[] pars)
+        public decimal GetDecimal(string sql, params SQLiteParameter[] pars)
         {
             return Convert.ToDecimal(GetScalar(sql, pars));
         }
-        public DateTime GetDateTime(string sql, params SqlParameter[] pars)
+        public DateTime GetDateTime(string sql, params SQLiteParameter[] pars)
         {
             return Convert.ToDateTime(GetScalar(sql, pars));
         }
@@ -100,7 +100,7 @@ namespace SqlSugar
         {
             return GetScalar(sql, SqlSugarTool.GetParameters(pars));
         }
-        public object GetScalar(string sql, params SqlParameter[] pars)
+        public object GetScalar(string sql, params SQLiteParameter[] pars)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, _sqlConnection);
             if (_tran != null)
@@ -123,7 +123,7 @@ namespace SqlSugar
         {
             return ExecuteCommand(sql, SqlSugarTool.GetParameters(pars));
         }
-        public int ExecuteCommand(string sql, params SqlParameter[] pars)
+        public int ExecuteCommand(string sql, params SQLiteCommand[] pars)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, _sqlConnection);
             sqlCommand.CommandTimeout = this.CommandTimeOut;
@@ -145,7 +145,7 @@ namespace SqlSugar
         {
             return GetReader(sql, SqlSugarTool.GetParameters(pars));
         }
-        public SQLiteDataReader GetReader(string sql, params SqlParameter[] pars)
+        public SQLiteDataReader GetReader(string sql, params SQLiteParameter[] pars)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, _sqlConnection);
             sqlCommand.CommandTimeout = this.CommandTimeOut;
@@ -168,7 +168,7 @@ namespace SqlSugar
         {
             return GetList<T>(sql, SqlSugarTool.GetParameters(pars));
         }
-        public List<T> GetList<T>(string sql, params SqlParameter[] pars)
+        public List<T> GetList<T>(string sql, params SQLiteParameter[] pars)
         {
             var reval = SqlSugarTool.DataReaderToList<T>(typeof(T), GetReader(sql, pars), null);
             return reval;
@@ -177,7 +177,7 @@ namespace SqlSugar
         {
             return GetSingle<T>(sql, SqlSugarTool.GetParameters(pars));
         }
-        public T GetSingle<T>(string sql, params SqlParameter[] pars)
+        public T GetSingle<T>(string sql, params SQLiteCommand[] pars)
         {
             var reval = SqlSugarTool.DataReaderToList<T>(typeof(T), GetReader(sql, pars), null).Single();
             return reval;
@@ -186,7 +186,7 @@ namespace SqlSugar
         {
             return GetDataTable(sql, SqlSugarTool.GetParameters(pars));
         }
-        public DataTable GetDataTable(string sql, params SqlParameter[] pars)
+        public DataTable GetDataTable(string sql, params SQLiteParameter[] pars)
         {
             SQLiteDataAdapter _sqlDataAdapter = new SQLiteDataAdapter(sql, _sqlConnection);
             _sqlDataAdapter.SelectCommand.Parameters.AddRange(pars);
@@ -208,7 +208,7 @@ namespace SqlSugar
         {
             return GetDataSetAll(sql, SqlSugarTool.GetParameters(pars));
         }
-        public DataSet GetDataSetAll(string sql, params SqlParameter[] pars)
+        public DataSet GetDataSetAll(string sql, params SQLiteParameter[] pars)
         {
             SQLiteDataAdapter _sqlDataAdapter = new SQLiteDataAdapter(sql, _sqlConnection);
             if (_tran != null)

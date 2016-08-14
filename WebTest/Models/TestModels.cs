@@ -13,7 +13,7 @@ namespace  Models
     public class classNew
     {
         public string newname { get; set; }
-        public int newid { get; set; }
+        public Int64 newid { get; set; }
         public string xx_name { get; set; }
     }
 }
