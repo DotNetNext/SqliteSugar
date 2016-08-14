@@ -92,7 +92,7 @@ namespace WebTest.Demo
                    .From("school", "s")
                    .Join("student", "st", "st.id", "s.id", JoinType.INNER)
                    .Join("student", "st2", "st2.id", "st.id", JoinType.LEFT)
-                   .Where("s.id>100 and s.id<@id")
+                   .Where("s.id<100 and s.id=@id")
                    .Where("1=1")//可以多个WHERE
                    .OrderBy("id")
                    .SelectToList<School/*新的Model我这里没有所以写的School*/>("st.*", new { id = 1 });
@@ -118,7 +118,7 @@ namespace WebTest.Demo
                 //--------转成List Dynmaic 或者 Json-----//
 
                 //不分页
-                var list1 = db.Sqlable().From("student", "s").Join("school", "l", "s.sch_id", "l.id and l.id=@id", JoinType.INNER).SelectToDynamic("*", new { id = 1 });
+                var list1 = db.Sqlable().From("student", "s").Join("school", "l", "s.sch_id", "l.id and l.id=@id", JoinType.INNER).SelectToDynamic("*", new { id = 2});
                 var list2 = db.Sqlable().From("student", "s").Join("school", "l", "s.sch_id", "l.id and l.id=@id", JoinType.INNER).SelectToJson("*", new { id = 1 });
                 var list3 = db.Sqlable().From("student", "s").Join("school", "l", "s.sch_id", "l.id and l.id=@id", JoinType.INNER).SelectToDataTable("*", new { id = 1 });
 
