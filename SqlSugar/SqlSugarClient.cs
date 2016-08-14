@@ -401,7 +401,7 @@ namespace SqliteSugar
                 }
                 else
                 {
-                    sbInsertSql.Append(");select @@identity;");
+                    sbInsertSql.Append(");select  last_insert_rowid() newid;");
                 }
                 cacheSqlManager.Add(cacheSqlKey, sbInsertSql, cacheSqlManager.Day);
             }

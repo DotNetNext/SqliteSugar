@@ -31,7 +31,7 @@ namespace WebTest.Demo
                 //同上
 
                 //sqlQuery
-                var list3 = db.SqlQuery<Student>("select * from Student");
+                var list3 = db.SqlQuery<Student>("select * from Student WHERE 1=1");
                 //同上
             }
         }
@@ -62,7 +62,7 @@ namespace WebTest.Demo
         };
         public static SqlSugarClient GetInstance()
         {
-            string connection = System.Configuration.ConfigurationManager.ConnectionStrings[@"sqlConn"].ToString(); //这里可以动态根据cookies或session实现多库切换
+           string connection = "DataSource=" + System.AppDomain.CurrentDomain.BaseDirectory + "App_Data\\demo.sqlite"; ; //这里可以动态根据cookies或session实现多库切换; //这里可以动态根据cookies或session实现多库切换
             var reval = new SqlSugarClient(connection);
             reval.SetFilterFilterParas(_filterParas);
             return reval;

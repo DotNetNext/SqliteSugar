@@ -54,7 +54,7 @@ namespace WebTest.Demos
 
             public static SqlSugarClient GetInstance()
             {
-                string connection = System.Configuration.ConfigurationManager.ConnectionStrings[@"sqlConn"].ToString(); //这里可以动态根据cookies或session实现多库切换
+                string connection = "DataSource=" + System.AppDomain.CurrentDomain.BaseDirectory + "App_Data\\demo.sqlite"; ; //这里可以动态根据cookies或session实现多库切换; //这里可以动态根据cookies或session实现多库切换
                 var reval = new SqlSugarClient(connection);
                 //设置流水号
                 reval.SetSerialNumber(_nums);

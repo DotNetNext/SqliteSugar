@@ -124,7 +124,7 @@ namespace SqliteSugar
         {
             List<string> guidThrow = new List<string>() { "int32", "datetime", "decimal", "double", "byte", "string" };//数据库为GUID有错的实体类形
             List<string> intThrow = new List<string>() { "datetime", "byte" };//数据库为int有错的实体类形
-            List<string> stringThrow = new List<string>() { "int32", "datetime", "decimal", "double", "byte", "guid" };//数据库为vachar有错的实体类形
+            List<string> stringThrow = new List<string>() { "int32",  "decimal", "double", "byte", "guid" };//数据库为vachar有错的实体类形
             List<string> decimalThrow = new List<string>() { "datetime", "byte", "guid" };
             List<string> doubleThrow = new List<string>() { "datetime", "byte", "guid" };
             List<string> dateThrow = new List<string>() { "int32", "decimal", "double", "byte", "guid" };
@@ -275,7 +275,7 @@ namespace SqliteSugar
                         else
                             method = getByte; break;
                     case "ENUMNAME":
-                        method = getValueMethod; break;
+                         method = getConvertToEnum_Nullable.MakeGenericMethod(type); break;
                     case "short":
                         CheckType(shortThrow, objTypeName, typeName, fieldName);
                         var isNotShort = objTypeName != "int16" && objTypeName != "short";

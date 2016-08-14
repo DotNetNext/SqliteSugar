@@ -339,7 +339,7 @@ namespace SqliteSugar
             {
                 return ids.Last().Value;
             }
-            return "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh";
+            return null;
         }
 
         /// <summary>
