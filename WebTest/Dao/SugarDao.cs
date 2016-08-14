@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using SqlSugar;
+using SqliteSugar;
 namespace WebTest.Dao
 {
     /// <summary>

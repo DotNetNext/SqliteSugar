@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：逻辑判段是什么？

@@ -1,5 +1,5 @@
 ﻿using System;
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：http存储对象接口

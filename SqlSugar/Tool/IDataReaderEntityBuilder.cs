@@ -6,7 +6,7 @@ using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：DataReader实体生成

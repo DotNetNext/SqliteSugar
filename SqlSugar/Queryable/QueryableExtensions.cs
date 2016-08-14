@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：Queryable扩展函数

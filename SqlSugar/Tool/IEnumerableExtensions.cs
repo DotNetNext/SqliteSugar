@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Data;
 using System.Data.SqlTypes;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// IEnumerable扩展函数

@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.Data;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：底层SQL辅助函数

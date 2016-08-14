@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.SQLite;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：Sqlable扩展函数

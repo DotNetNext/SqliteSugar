@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data.SQLite;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
 
     /// <summary>

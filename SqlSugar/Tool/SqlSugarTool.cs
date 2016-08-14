@@ -11,7 +11,7 @@ using System.Web;
 using System.Data.SQLite;
 
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：SqlSugar工具类
@@ -509,7 +509,7 @@ namespace SqlSugar
             return paraDictionarAll.Select(it => new SqlParameter("@" + it.Key, it.Value)).ToArray();
         }
 
-        internal static StringBuilder GetQueryableSql<T>(SqlSugar.Queryable<T> queryable)
+        internal static StringBuilder GetQueryableSql<T>(Queryable<T> queryable)
         {
             StringBuilder sbSql = new StringBuilder();
             string tableName = queryable.TableName.IsNullOrEmpty() ? queryable.TName : queryable.TableName;

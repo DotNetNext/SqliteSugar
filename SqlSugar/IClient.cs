@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace SqlSugar
+namespace SqliteSugar
 {
     public interface IClient
     {

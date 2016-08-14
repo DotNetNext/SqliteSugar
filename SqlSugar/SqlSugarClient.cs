@@ -8,7 +8,7 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Data.SQLite;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：SQL糖 ORM 核心类
@@ -17,7 +17,7 @@ namespace SqlSugar
     /// ** 作者：sunkaixuan
     /// ** 使用说明：http://www.cnblogs.com/sunkaixuan/p/4649904.html
     /// </summary>
-    public class SqlSugarClient : SqlHelper, SqlSugar.IClient
+    public class SqlSugarClient : SqlHelper, IClient
     {
 
         public SqlSugarClient(string connectionString)

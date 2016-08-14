@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// 多语言帮助类

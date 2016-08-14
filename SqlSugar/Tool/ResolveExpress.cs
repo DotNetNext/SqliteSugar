@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Data.SQLite;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：拉姆达解析类

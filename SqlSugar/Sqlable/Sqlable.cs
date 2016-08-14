@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data.SQLite;
 
-namespace SqlSugar
+namespace SqliteSugar
 {
     /// <summary>
     /// ** 描述：Queryable是多表查询基类，基于拥有大量查询扩展函数
