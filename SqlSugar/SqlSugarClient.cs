@@ -543,17 +543,13 @@ namespace SqliteSugar
             {
                 sbSql.AppendFormat("WHERE {1} IN ({2})", typeName, pkName, whereIn.ToJoinSqlInVal());
             }
-            List<SqlParameter> parsList = new List<SqlParameter>();
-            var pars = rows.Select(c => new SqlParameter("@" + c.Key, c.Value));
+            List<SQLiteParameter> parsList = new List<SQLiteParameter>();
+            var pars = rows.Select(c => new SQLiteParameter("@" + c.Key, c.Value));
             if (pars != null)
             {
                 foreach (var par in pars)
                 {
                     var isDisableUpdateColumns = DisableUpdateColumns != null && DisableUpdateColumns.Any(it => it.ToLower() == par.ParameterName.TrimStart('@').ToLower());
-                    if (par.SqlDbType == SqlDbType.Udt || par.ParameterName.ToLower().Contains("hierarchyid"))
-                    {
-                        par.UdtTypeName = "HIERARCHYID";
-                    }
                     if (!isDisableUpdateColumns)
                     {
                         parsList.Add(par);

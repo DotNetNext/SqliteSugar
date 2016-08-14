@@ -123,7 +123,7 @@ namespace SqliteSugar
         {
             return ExecuteCommand(sql, SqlSugarTool.GetParameters(pars));
         }
-        public int ExecuteCommand(string sql, params SQLiteCommand[] pars)
+        public int ExecuteCommand(string sql, params SQLiteParameter[] pars)
         {
             SQLiteCommand sqlCommand = new SQLiteCommand(sql, _sqlConnection);
             sqlCommand.CommandTimeout = this.CommandTimeOut;
@@ -177,7 +177,7 @@ namespace SqliteSugar
         {
             return GetSingle<T>(sql, SqlSugarTool.GetParameters(pars));
         }
-        public T GetSingle<T>(string sql, params SQLiteCommand[] pars)
+        public T GetSingle<T>(string sql, params SQLiteParameter[] pars)
         {
             var reval = SqlSugarTool.DataReaderToList<T>(typeof(T), GetReader(sql, pars), null).Single();
             return reval;

@@ -302,24 +302,7 @@ namespace SqliteSugar
             string key = "GetIdentityKeyByTableName" + tableName;
             var cm = CacheManager<List<KeyValue>>.GetInstance();
             List<KeyValue> identityInfo = null;
-            string sql = string.Format(@"
-                            declare @Table_name varchar(60)
-                            set @Table_name = '{0}';
-
-
-                            Select so.name tableName,                   --表名字
-                                   sc.name keyName,             --自增字段名字
-                                   ident_current(so.name) curr_value,    --自增字段当前值
-                                   ident_incr(so.name) incr_value,       --自增字段增长值
-                                   ident_seed(so.name) seed_value        --自增字段种子值
-                              from sysobjects so 
-                            Inner Join syscolumns sc
-                                on so.id = sc.id
-
-                                   and columnproperty(sc.id, sc.name, 'IsIdentity') = 1
-
-                            Where upper(so.name) = upper(@Table_name)
-         ", tableName);
+            string sql = "pragma table_info('"+tableName+"')";
             if (cm.ContainsKey(key))
             {
                 identityInfo = cm[key];
@@ -333,7 +316,8 @@ namespace SqliteSugar
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        identityInfo.Add(new KeyValue() { Key = dr["tableName"].ToString().ToLower(), Value = dr["keyName"].ToString() });
+                        if (dr["pk"].ToString() == "1")
+                            identityInfo.Add(new KeyValue() { Key =tableName, Value = dr["name"].ToString() });
                     }
                 }
                 cm.Add(key, identityInfo, cm.Day);
@@ -350,42 +334,12 @@ namespace SqliteSugar
         /// <returns></returns>
         internal static string GetPrimaryKeyByTableName(SqlSugarClient db, string tableName)
         {
-            string key = "GetPrimaryKeyByTableName" + tableName;
-            tableName = tableName.ToLower();
-            var cm = CacheManager<List<KeyValue>>.GetInstance();
-            List<KeyValue> primaryInfo = null;
-
-            //获取主键信息
-            if (cm.ContainsKey(key))
-                primaryInfo = cm[key];
-            else
+            var ids = GetIdentitiesKeyByTableName(db, tableName);
+            if (ids.IsValuable())
             {
-                string sql = @"  				SELECT a.name as keyName ,d.name as tableName
-  FROM   syscolumns a 
-  inner  join sysobjects d on a.id=d.id       
-  where  exists(SELECT 1 FROM sysobjects where xtype='PK' and  parent_obj=a.id and name in (  
-  SELECT name  FROM sysindexes   WHERE indid in(  
-  SELECT indid FROM sysindexkeys WHERE id = a.id AND colid=a.colid  
-)))";
-                var dt = db.GetDataTable(sql);
-                primaryInfo = new List<KeyValue>();
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        primaryInfo.Add(new KeyValue() { Key = dr["tableName"].ToString().ToLower(), Value = dr["keyName"].ToString() });
-                    }
-                }
-                cm.Add(key, primaryInfo, cm.Day);
+                return ids.Last().Value;
             }
-
-            //反回主键
-            if (!primaryInfo.Any(it => it.Key == tableName))
-            {
-                return null;
-            }
-            return primaryInfo.First(it => it.Key == tableName).Value;
-
+            return "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh";
         }
 
         /// <summary>
