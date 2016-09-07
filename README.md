@@ -8,9 +8,9 @@ QQ Group 225982985
 
 ASP.NET CORE MSSQL https://github.com/sunkaixuan/ASP_NET_CORE_ORM_SqlSugar
 
-ASP.NET 4.0+ MYSQL https://github.com/sunkaixuan/MySqlSugar
+ASP.NET  MSSQL https://github.com/sunkaixuan/SqlSugar
 
-
+ASP.NET  MySql https://github.com/sunkaixuan/MySqlSugar
 
 
 # Select Queryable<T>
@@ -96,11 +96,10 @@ ASP.NET 4.0+ MYSQL https://github.com/sunkaixuan/MySqlSugar
                 var list4 = db.Queryable<Student>().In("id", intList).ToList();
 
                 //group by
-                var list7 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select("sex,Count=count(*)").ToDynamic();
-                var list8 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).GroupBy(it=>it.id).Select("id,sex,Count=count(*)").ToDynamic();
-                List<SexTotal> list5 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select<Student, SexTotal>("Sex,Count=count(*)").ToList();
-                List<SexTotal> list6 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy("sex").Select<Student, SexTotal>("Sex,Count=count(*)").ToList();
-                //SELECT Sex,Count=count(*)  FROM Student  WHERE 1=1  AND  (id < 20)    GROUP BY Sex 
+                var list7 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select("sex,count(*) as Count").ToDynamic();
+                var list8 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).GroupBy(it => it.id).Select("id,sex, count(*) as Count").ToDynamic();
+                List<SexTotal> list9 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy(it => it.sex).Select<Student, SexTotal>("Sex, count(*) as Count").ToList();
+                List<SexTotal> list10 = db.Queryable<Student>().Where(c => c.id < 20).GroupBy("sex").Select<Student, SexTotal>("Sex, count(*) as Count").ToList();
       }
 
 # Complex query  Sqlable
@@ -185,11 +184,11 @@ ASP.NET 4.0+ MYSQL https://github.com/sunkaixuan/MySqlSugar
                 //To Json
                 string list4 = db.SqlQueryJson("select * from student");
                 //get int
-                var list5 = db.SqlQuery<int>("select top 1 id from Student").SingleOrDefault();
+                var list5 = db.SqlQuery<int>("select  id from Student limit 0,1").First();
                 //get dictionary
                 Dictionary<string, string> list6 = db.SqlQuery<KeyValuePair<string, string>>("select id,name from Student").ToDictionary(it => it.Key, it => it.Value);
                 //get array
-                var list7 = db.SqlQuery<string[]>("select top 1 id,name from Student").SingleOrDefault();
+                var list7 = db.SqlQuery<string[]>("select  id from Student limit 0,1").SingleOrDefault();
                 //exex sp
                 var spResult = db.SqlQuery<School>("exec sp_school @p1,@p2", new { p1 = 1, p2 = 2 });
 
