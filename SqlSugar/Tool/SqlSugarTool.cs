@@ -94,7 +94,13 @@ namespace SqliteSugar
             catch (Exception ex)
             {
                 if (isClose) { dr.Close(); dr.Dispose(); dr = null; }
-                throw ex;
+                throw new SqlSugarException(@"Sqlite类型解析错误，请使用Sqlite 最标准的类型存储 
+NTEGER: 整数值是全数字(包括正和负)。整数可以是1, 2, 3, 4, 6或 8字节。整数的最大范围(8 bytes)是{-9223372036854775808, 0, +9223372036854775807}。SQLite根据数字的值自动控制整数所占的字节数。
+REAL: 实数是10进制的数值。SQLite使用8字节的符点数来存储实数。
+TEXT: 文本(TEXT)是字符数据。SQLite支持几种字符编码，包括UTF-8和UTF-16。字符串的大小没有限制。
+BLOB: 二进制大对象(BLOB)是任意类型的数据。BLOB的大小没有限制
+。
+ " + ex.Message);
             }
             return list;
         }

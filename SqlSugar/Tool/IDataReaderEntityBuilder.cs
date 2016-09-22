@@ -309,7 +309,17 @@ namespace SqliteSugar
             switch (typeName.ToLower())
             {
                 case "integer":
+                case "boolean":
+                case "int":
+                case "decimal":
+                case "float":
+                case "int64":
+                case "number":
                     reval = "int";
+                    break;
+                case "dateTime":
+                case "date":
+                    reval = "dateTime";
                     break;
                 case "text":
                     reval = "string";
@@ -317,6 +327,8 @@ namespace SqliteSugar
                 case "real":
                     reval = "decimal";
                     break;
+                case "binary":
+                case "image":
                 case "blob":
                     reval = "byte[]";
                     break;

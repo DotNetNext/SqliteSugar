@@ -17,5 +17,12 @@ namespace Models
 
         public Int64 isOk {get;set;}
 
+        public int FieldInt { get; set; }
+
+        public bool FieldBool { get; set; }
+
+        public DateTime FieldDateTime { get; set; }
+
+        public decimal FieldNumber { get; set; }
     }
 }
