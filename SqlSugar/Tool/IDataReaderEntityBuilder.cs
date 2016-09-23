@@ -317,7 +317,7 @@ namespace SqliteSugar
                 case "number":
                     reval = "int";
                     break;
-                case "dateTime":
+                case "datetime":
                 case "date":
                     reval = "dateTime";
                     break;
