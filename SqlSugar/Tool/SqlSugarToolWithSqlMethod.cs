@@ -231,15 +231,15 @@ namespace SQLiteSugar
             string sql = null;
             if (tableOrView == null)
             {
-                sql = " show table status ";
+                sql = " select name from sqlite_master where type='table' or type='view'  order by name; ";
             }
             else if (tableOrView == true)
             {
-                sql = " show table status where comment='';";
+                sql = "select name from sqlite_master where type='table' order by name;";
             }
             else
             {
-                sql = " show table status where comment='view'";
+                sql = " select name from sqlite_master where type='view'  order by name;";
             }
             return sql;
         }

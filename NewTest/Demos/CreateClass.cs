@@ -21,7 +21,7 @@ namespace NewTest.Demos
                 //可以结合别名表，请看别名表的用法
                 //db.SetMappingTables(mappingTableList);
 
-                db.ClassGenerating.CreateClassFiles(db, ("e:/TestModels"), "Models");
+                db.ClassGenerating.CreateClassFiles(db, ("e:/TestSqliteModels"), "Models");
 
 
                 //批量设置别名表,可以方便生成指定格式的实体对象
@@ -41,7 +41,7 @@ namespace NewTest.Demos
 
 
                 //只生成student和school表的实体
-                db.ClassGenerating.CreateClassFilesByTableNames(db, "e:/TestModels2", "Models", new string[] { "student", "school" });
+                db.ClassGenerating.CreateClassFilesByTableNames(db, "e:/TestSqliteModels2", "Models", new string[] { "student", "school" });
 
                 //根据表名生成class字符串
                 var str = db.ClassGenerating.TableNameToClass(db, "Student");
