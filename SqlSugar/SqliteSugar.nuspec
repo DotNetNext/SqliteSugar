@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>sqliteSugar</id>
-    <version>2.4.5.5</version>
+    <version>3.1.1.1</version>
     <title>SqliteSugar ORM</title>
     <authors>sun kaixuan</authors>
     <owners>landa</owners>
@@ -14,4 +14,7 @@
     <copyright>Copyright 2015</copyright>
     <tags>asp.net orm</tags>
   </metadata>
+<files>
+     <file src="F:\MyOpenSource\SqliteSugar\SqlSugar\bin\Debug\SqliteSugar.XML"  target=""></file>
+    </files>
 </package>
