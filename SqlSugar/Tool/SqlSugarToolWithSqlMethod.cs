@@ -169,8 +169,13 @@ namespace SQLiteSugar
             {
                 var isLog = db.IsEnableLogEvent;
                 db.IsEnableLogEvent = false;
-                string sql = " SHOW columns FROM "+tableName.GetTranslationSqlName();
-                var reval = db.SqlQuery<string>(sql);
+                string sql = " PRAGMA table_info('" + tableName+ "')";
+                var dt = db.GetDataTable(sql);
+                var reval = new List<string>();
+                foreach (DataRow item in dt.Rows)
+                {
+                    reval.Add(item["name"].ObjToString());
+                }
                 db.IsEnableLogEvent = isLog;
                 cm.Add(key, reval, cm.Day);
                 return reval;
