@@ -79,14 +79,10 @@ namespace SQLiteSugar
             return handler(dataRecord);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="dataRecord"></param>
-        /// <returns></returns>
         public static IDataReaderEntityBuilder<T> CreateBuilder(Type type, IDataRecord dataRecord)
         {
+
+            {
                 IDataReaderEntityBuilder<T> dynamicBuilder = new IDataReaderEntityBuilder<T>();
                 DynamicMethod method = new DynamicMethod("DynamicCreateEntity", type,
                         new Type[] { typeof(IDataRecord) }, type, true);
@@ -94,26 +90,15 @@ namespace SQLiteSugar
                 LocalBuilder result = generator.DeclareLocal(type);
                 generator.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
                 generator.Emit(OpCodes.Stloc, result);
-                string cacheKey = "SqlSugarClient.InitAttributes";
-                var cm = CacheManager<List<KeyValue>>.GetInstance();
-                var tFieldNames = typeof(T).GetProperties().Select(it => it.Name).ToList();
                 for (int i = 0; i < dataRecord.FieldCount; i++)
                 {
-                    string dbFieldName = dataRecord.GetName(i);
-                    if (cm.ContainsKey(cacheKey) && cm[cacheKey].Any(it => it.Value == dbFieldName))
-                    {
-                        var classFieldName= cm[cacheKey].Single(it => it.Value == dbFieldName).Key;
-                        if (tFieldNames.Any(it => it == classFieldName))//T包含映射属性
-                        {
-                            dbFieldName = classFieldName;
-                        }
-                    }
-                    PropertyInfo propertyInfo = type.GetProperty(dbFieldName);
+                    string fieldName = dataRecord.GetName(i);
+                    PropertyInfo propertyInfo = type.GetProperty(fieldName);
                     Label endIfLabel = generator.DefineLabel();
                     if (propertyInfo != null && propertyInfo.GetSetMethod() != null)
                     {
                         bool isNullable = false;
-                        var underType = SqlSugarTool.GetUnderType(propertyInfo, ref isNullable);
+                        var underType = GetUnderType(propertyInfo, ref isNullable);
 
                         generator.Emit(OpCodes.Ldarg_0);
                         generator.Emit(OpCodes.Ldc_I4, i);
@@ -122,7 +107,7 @@ namespace SQLiteSugar
                         generator.Emit(OpCodes.Ldloc, result);
                         generator.Emit(OpCodes.Ldarg_0);
                         generator.Emit(OpCodes.Ldc_I4, i);
-                        GeneratorCallMethod(generator, underType, isNullable, propertyInfo, dataRecord.GetDataTypeName(i), dbFieldName);
+                        GeneratorCallMethod(generator, underType, isNullable, propertyInfo, dataRecord.GetDataTypeName(i), fieldName);
                         generator.Emit(OpCodes.Callvirt, propertyInfo.GetSetMethod());
                         generator.MarkLabel(endIfLabel);
                     }
@@ -131,18 +116,8 @@ namespace SQLiteSugar
                 generator.Emit(OpCodes.Ret);
                 dynamicBuilder.handler = (Load)method.CreateDelegate(typeof(Load));
                 return dynamicBuilder;
-        }
-
-
-        private static void CheckType(List<string> errorTypes, string objType, string dbType, string field)
-        {
-            var isAny = errorTypes.Contains(objType);
-            if (isAny)
-            {
-                throw new SqlSugarException(string.Format("{0} can't  convert {1} to {2}", field, dbType, objType));
             }
         }
-
 
         /// <summary>
         /// 动态获取IDataRecord里面的函数
@@ -153,20 +128,33 @@ namespace SQLiteSugar
         {
             List<string> guidThrow = new List<string>() { "int32", "datetime", "decimal", "double", "byte", "string" };//数据库为GUID有错的实体类形
             List<string> intThrow = new List<string>() { "datetime", "byte" };//数据库为int有错的实体类形
-            List<string> stringThrow = new List<string>() { "int32", "datetime", "decimal", "double", "byte", "guid" };//数据库为vachar有错的实体类形
+            List<string> stringThrow = new List<string>() { "int32", "decimal", "double", "byte", "guid" };//数据库为vachar有错的实体类形
             List<string> decimalThrow = new List<string>() { "datetime", "byte", "guid" };
             List<string> doubleThrow = new List<string>() { "datetime", "byte", "guid" };
             List<string> dateThrow = new List<string>() { "int32", "decimal", "double", "byte", "guid" };
             List<string> shortThrow = new List<string>() { "datetime", "guid" };
+            List<string> byteThrow = new List<string>() { "datetime", "guid" };
             MethodInfo method = null;
-            var typeName =SqlSugarTool.ChangeDBTypeToCSharpType(dbTypeName);
+            var typeName = SqlSugarTool.ChangeDBTypeToCSharpType(dbTypeName);
             var objTypeName = type.Name.ToLower();
             var isEnum = type.IsEnum;
             if (isEnum)
             {
                 typeName = "ENUMNAME";
             }
-            else if (typeName.IsIn("byte[]", "other"))
+            else if (dbTypeName == "")
+            {
+                if (type.Name == "String")
+                {
+                    generator.Emit(OpCodes.Call, getOther.MakeGenericMethod(type));
+                }
+                else
+                {
+                    generator.Emit(OpCodes.Call, getOtherNull.MakeGenericMethod(type));
+                }
+                return;
+            }
+            else if (dbTypeName.Contains("hierarchyid") || typeName == "byte[]")
             {
                 generator.Emit(OpCodes.Call, getValueMethod);
                 generator.Emit(OpCodes.Unbox_Any, pro.PropertyType);//找不到类型才执行拆箱（类型转换）
@@ -218,7 +206,11 @@ namespace SQLiteSugar
                         else
                             method = getConvertGuid; break;
                     case "byte":
-                        method = getConvertByte; break;
+                        CheckType(byteThrow, objTypeName, typeName, fieldName);
+                        if (objTypeName != "byte")
+                            method = getOtherNull.MakeGenericMethod(type);
+                        else
+                            method = getConvertByte; break;
                     case "ENUMNAME":
                         method = getConvertToEnum_Nullable.MakeGenericMethod(type); break;
                     case "short":
@@ -282,9 +274,13 @@ namespace SQLiteSugar
                         else
                             method = getGuid; break;
                     case "byte":
-                        method = getByte; break;
+                        CheckType(byteThrow, objTypeName, typeName, fieldName);
+                        if (objTypeName != "byte")
+                            method = getOther.MakeGenericMethod(type);
+                        else
+                            method = getByte; break;
                     case "ENUMNAME":
-                        method = getValueMethod; break;
+                        method = getConvertToEnum_Nullable.MakeGenericMethod(type); break;
                     case "short":
                         CheckType(shortThrow, objTypeName, typeName, fieldName);
                         var isNotShort = objTypeName != "int16" && objTypeName != "short";
@@ -307,6 +303,27 @@ namespace SQLiteSugar
 
 
         }
-  
+
+        private static void CheckType(List<string> errorTypes, string objType, string dbType, string field)
+        {
+            var isAny = errorTypes.Contains(objType);
+            if (isAny)
+            {
+                throw new SqlSugarException(string.Format("{0} can't  convert {1} to {2}", field, dbType, objType));
+            }
+        }
+        /// <summary>
+        /// 获取最底层类型
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="isNullable"></param>
+        /// <returns></returns>
+        private static Type GetUnderType(PropertyInfo propertyInfo, ref bool isNullable)
+        {
+            Type unType = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
+            isNullable = unType != null;
+            unType = unType ?? propertyInfo.PropertyType;
+            return unType;
+        }
     }
 }

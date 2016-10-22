@@ -108,40 +108,14 @@ namespace SQLiteSugar
         /// <returns></returns>
         internal static string GetPrimaryKeyByTableName(SqlSugarClient db, string tableName)
         {
-            string key = "GetPrimaryKeyByTableName" + tableName;
-            tableName = tableName.ToLower();
-            var cm = CacheManager<List<KeyValue>>.GetInstance();
-            List<KeyValue> primaryInfo = null;
-
-            //获取主键信息
-            if (cm.ContainsKey(key))
-                primaryInfo = cm[key];
-            else
+            var ids = GetIdentitiesKeyByTableName(db, tableName);
+            if (ids.IsValuable())
             {
-                string sql = @"select TABLE_NAME as tableName,COLUMN_NAME as keyName from INFORMATION_SCHEMA.COLUMNS where table_name='" + tableName + "' AND COLUMN_KEY='PRI';";
-                var isLog = db.IsEnableLogEvent;
-                db.IsEnableLogEvent = false;
-                var dt = db.GetDataTable(sql);
-                db.IsEnableLogEvent = isLog;
-                primaryInfo = new List<KeyValue>();
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        primaryInfo.Add(new KeyValue() { Key = dr["tableName"].ToString().ToLower(), Value = dr["keyName"].ToString() });
-                    }
-                }
-                cm.Add(key, primaryInfo, cm.Day);
+                return ids.Last().Value;
             }
-
-            //反回主键
-            if (!primaryInfo.Any(it => it.Key == tableName))
-            {
-                return null;
-            }
-            return primaryInfo.First(it => it.Key == tableName).Value;
-
+            return null;
         }
+  
 
         /// <summary>
         ///根据表名获取自添列 keyTableName Value columnName
@@ -154,6 +128,7 @@ namespace SQLiteSugar
             string key = "GetIdentityKeyByTableName" + tableName;
             var cm = CacheManager<List<KeyValue>>.GetInstance();
             List<KeyValue> identityInfo = null;
+            string sql = "pragma table_info('" + tableName + "')";
             if (cm.ContainsKey(key))
             {
                 identityInfo = cm[key];
@@ -161,20 +136,14 @@ namespace SQLiteSugar
             }
             else
             {
-                string sql = string.Format(@"
-                           select TABLE_NAME as tableName,COLUMN_NAME as keyName  from INFORMATION_SCHEMA.COLUMNS
-                       where table_name='" + tableName + @"' AND EXTRA='auto_increment';
-                 ", tableName);
-                var isLog = db.IsEnableLogEvent;
-                db.IsEnableLogEvent = false;
                 var dt = db.GetDataTable(sql);
-                db.IsEnableLogEvent = isLog;
                 identityInfo = new List<KeyValue>();
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        identityInfo.Add(new KeyValue() { Key = dr["tableName"].ToString().ToLower(), Value = dr["keyName"].ToString() });
+                        if (dr["pk"].ToString() == "1")
+                            identityInfo.Add(new KeyValue() { Key = tableName, Value = dr["name"].ToString() });
                     }
                 }
                 cm.Add(key, identityInfo, cm.Day);
@@ -207,7 +176,46 @@ namespace SQLiteSugar
                 return reval;
             }
         }
-
+        /// <summary>
+        /// 将SqlType转成C#Type
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        public static string ChangeDBTypeToCSharpType(string typeName)
+        {
+            string reval = string.Empty;
+            switch (typeName.ToLower())
+            {
+                case "integer":
+                case "boolean":
+                case "int":
+                case "decimal":
+                case "float":
+                case "int64":
+                case "number":
+                    reval = "int";
+                    break;
+                case "datetime":
+                case "date":
+                    reval = "dateTime";
+                    break;
+                case "text":
+                    reval = "string";
+                    break;
+                case "real":
+                    reval = "decimal";
+                    break;
+                case "binary":
+                case "image":
+                case "blob":
+                    reval = "byte[]";
+                    break;
+                default:
+                    reval = "string";
+                    break;
+            }
+            return reval;
+        }
         /// <summary>
         ///tableOrView  null=u,v , true=u , false=v
         /// </summary>
@@ -253,100 +261,7 @@ namespace SQLiteSugar
             return "select  * from {0} limit 0,1";
         }
 
-        /// <summary>
-        /// 将SqlType转成C#Type
-        /// </summary>
-        /// <param name="typeName"></param>
-        /// <returns></returns>
-        public static string ChangeDBTypeToCSharpType(string typeName)
-        {
-            string reval = string.Empty;
-            switch (typeName.ToLower())
-            {
-                case "integer":
-                case "int":
-                    reval = "int";
-                    break;
-                case "text":
-                    reval = "string";
-                    break;
-                case "bigint":
-                    reval = "long";
-                    break;
-                case "binary":
-                    reval = "object";
-                    break;
-                case "bit":
-                    reval = "bool";
-                    break;
-                case "char":
-                    reval = "string";
-                    break;
-                case "time":
-                case "datetime":
-                    reval = "dateTime";
-                    break;
-                case "decimal":
-                    reval = "decimal";
-                    break;
-                case "double":
-                case "float":
-                    reval = "double";
-                    break;
-                case "image":
-                    reval = "byte[]";
-                    break;
-                case "money":
-                    reval = "decimal";
-                    break;
-                case "nchar":
-                    reval = "string";
-                    break;
-                case "ntext":
-                    reval = "string";
-                    break;
-                case "numeric":
-                    reval = "decimal";
-                    break;
-                case "nvarchar":
-                    reval = "string";
-                    break;
-                case "real":
-                    reval = "float";
-                    break;
-                case "smalldatetime":
-                    reval = "dateTime";
-                    break;
-                case "smallint":
-                    reval = "short";
-                    break;
-                case "smallmoney":
-                    reval = "decimal";
-                    break;
-                case "timestamp":
-                    reval = "dateTime";
-                    break;
-                case "tinyint":
-                    reval = "byte";
-                    break;
-                case "uniqueidentifier":
-                    reval = "guid";
-                    break;
-                case "varbinary":
-                    reval = "byte[]";
-                    break;
-                case "varchar":
-                    reval = "string";
-                    break;
-                case "Variant":
-                    reval = "object";
-                    break;
-                default:
-                    reval = "other";
-                    break;
-            }
-            return reval;
-        }
+         
 
         /// <summary>
         /// par的符号
@@ -371,16 +286,16 @@ namespace SQLiteSugar
                 var array = name.Split('.');
                 if (array.Length == 2)
                 {
-                    return string.Format("{0}.`{1}`", array.First(), array.Last());
+                    return string.Format("{0}.[{1}]", array.First(), array.Last());
                 }
                 else
                 {
-                    return string.Join(".", array.Select(it => "`" + it + "`"));
+                    return string.Join(".", array.Select(it => "[" + it + "]"));
                 }
             }
             else
             {
-                return "`" + name + "`";
+                return "[" + name + "]";
             }
         }
         /// <summary>
