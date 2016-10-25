@@ -79,51 +79,69 @@ namespace SQLiteSugar
             return handler(dataRecord);
         }
 
+        /// <summary>
+        /// 创建绑定
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="dataRecord"></param>
+        /// <returns></returns>
         public static IDataReaderEntityBuilder<T> CreateBuilder(Type type, IDataRecord dataRecord)
         {
-
+            IDataReaderEntityBuilder<T> dynamicBuilder = new IDataReaderEntityBuilder<T>();
+            DynamicMethod method = new DynamicMethod("DynamicCreateEntity", type,
+                    new Type[] { typeof(IDataRecord) }, type, true);
+            ILGenerator generator = method.GetILGenerator();
+            LocalBuilder result = generator.DeclareLocal(type);
+            generator.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
+            generator.Emit(OpCodes.Stloc, result);
+            string cacheKey = "SqlSugarClient.InitAttributes";
+            var cm = CacheManager<List<KeyValue>>.GetInstance();
+            var tFieldNames = typeof(T).GetProperties().Select(it => it.Name).ToList();
+            for (int i = 0; i < dataRecord.FieldCount; i++)
             {
-                IDataReaderEntityBuilder<T> dynamicBuilder = new IDataReaderEntityBuilder<T>();
-                DynamicMethod method = new DynamicMethod("DynamicCreateEntity", type,
-                        new Type[] { typeof(IDataRecord) }, type, true);
-                ILGenerator generator = method.GetILGenerator();
-                LocalBuilder result = generator.DeclareLocal(type);
-                generator.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
-                generator.Emit(OpCodes.Stloc, result);
-                for (int i = 0; i < dataRecord.FieldCount; i++)
+                string dbFieldName = dataRecord.GetName(i);
+                if (cm.ContainsKey(cacheKey) && cm[cacheKey].Any(it => it.Value == dbFieldName))
                 {
-                    string fieldName = dataRecord.GetName(i);
-                    PropertyInfo propertyInfo = type.GetProperty(fieldName);
-                    Label endIfLabel = generator.DefineLabel();
-                    if (propertyInfo != null && propertyInfo.GetSetMethod() != null)
+                    var classFieldName = cm[cacheKey].Single(it => it.Value == dbFieldName).Key;
+                    if (tFieldNames.Any(it => it == classFieldName))//T包含映射属性
                     {
-                        bool isNullable = false;
-                        var underType = GetUnderType(propertyInfo, ref isNullable);
-
-                        generator.Emit(OpCodes.Ldarg_0);
-                        generator.Emit(OpCodes.Ldc_I4, i);
-                        generator.Emit(OpCodes.Callvirt, isDBNullMethod);
-                        generator.Emit(OpCodes.Brtrue, endIfLabel);
-                        generator.Emit(OpCodes.Ldloc, result);
-                        generator.Emit(OpCodes.Ldarg_0);
-                        generator.Emit(OpCodes.Ldc_I4, i);
-                        GeneratorCallMethod(generator, underType, isNullable, propertyInfo, dataRecord.GetDataTypeName(i), fieldName);
-                        generator.Emit(OpCodes.Callvirt, propertyInfo.GetSetMethod());
-                        generator.MarkLabel(endIfLabel);
+                        dbFieldName = classFieldName;
                     }
                 }
-                generator.Emit(OpCodes.Ldloc, result);
-                generator.Emit(OpCodes.Ret);
-                dynamicBuilder.handler = (Load)method.CreateDelegate(typeof(Load));
-                return dynamicBuilder;
+                PropertyInfo propertyInfo = type.GetProperty(dbFieldName);
+                Label endIfLabel = generator.DefineLabel();
+                if (propertyInfo != null && propertyInfo.GetSetMethod() != null)
+                {
+                    bool isNullable = false;
+                    var underType = SqlSugarTool.GetUnderType(propertyInfo, ref isNullable);
+
+                    generator.Emit(OpCodes.Ldarg_0);
+                    generator.Emit(OpCodes.Ldc_I4, i);
+                    generator.Emit(OpCodes.Callvirt, isDBNullMethod);
+                    generator.Emit(OpCodes.Brtrue, endIfLabel);
+                    generator.Emit(OpCodes.Ldloc, result);
+                    generator.Emit(OpCodes.Ldarg_0);
+                    generator.Emit(OpCodes.Ldc_I4, i);
+                    GeneratorCallMethod(generator, underType, isNullable, propertyInfo, dataRecord.GetDataTypeName(i), dbFieldName);
+                    generator.Emit(OpCodes.Callvirt, propertyInfo.GetSetMethod());
+                    generator.MarkLabel(endIfLabel);
+                }
             }
+            generator.Emit(OpCodes.Ldloc, result);
+            generator.Emit(OpCodes.Ret);
+            dynamicBuilder.handler = (Load)method.CreateDelegate(typeof(Load));
+            return dynamicBuilder;
         }
 
         /// <summary>
         /// 动态获取IDataRecord里面的函数
         /// </summary>
         /// <param name="generator"></param>
+        /// <param name="type"></param>
+        /// <param name="isNullable"></param>
         /// <param name="pro"></param>
+        /// <param name="dbTypeName"></param>
+        /// <param name="fieldName"></param>
         private static void GeneratorCallMethod(ILGenerator generator, Type type, bool isNullable, PropertyInfo pro, string dbTypeName, string fieldName)
         {
             List<string> guidThrow = new List<string>() { "int32", "datetime", "decimal", "double", "byte", "string" };//数据库为GUID有错的实体类形
