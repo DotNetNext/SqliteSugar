@@ -29,7 +29,7 @@ namespace SQLiteSugar
         }
 
         public string SqlWhere = null;
-        public ResolveExpressType Type = ResolveExpressType.oneT;
+        public ResolveExpressType Type = ResolveExpressType.OneT;
         public List<SQLiteParameter> Paras = new List<SQLiteParameter>();
         private int SameIndex = 1;
         private SqlSugarClient DB;
@@ -251,7 +251,7 @@ namespace SQLiteSugar
             string oldLeft = left;
             left = left + SameIndex;
             SameIndex++;
-            if (Type != ResolveExpressType.oneT)
+            if (Type != ResolveExpressType.OneT)
             {
                 left = left.Replace(".", "_");
             }
@@ -277,7 +277,7 @@ namespace SQLiteSugar
             string oldRight = right;
             right = right + SameIndex;
             SameIndex++;
-            if (Type != ResolveExpressType.oneT)
+            if (Type != ResolveExpressType.OneT)
             {
                 right = right.Replace(".", "_");
             }
