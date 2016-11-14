@@ -204,6 +204,9 @@ namespace SQLiteSugar
                 case "date":
                     reval = "dateTime";
                     break;
+                case "varchar":
+                case "nvarchar":
+                case "char":
                 case "text":
                     reval = "string";
                     break;
@@ -216,7 +219,7 @@ namespace SQLiteSugar
                     reval = "byte[]";
                     break;
                 default:
-                    reval = "string";
+                    reval = "other";
                     break;
             }
             return reval;
