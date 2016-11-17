@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>sqliteSugar</id>
-    <version>3.1.2.3</version>
+    <version>3.5.2.1</version>
     <title>SqliteSugar ORM</title>
     <authors>sun kaixuan</authors>
     <owners>landa</owners>
