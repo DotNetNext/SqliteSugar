@@ -890,6 +890,22 @@ namespace SQLiteSugar
         }
 
         /// <summary>
+        /// 将Queryable转换为分页后的List&lt;T&gt;集合
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <param name="pageCount">pageCount无需赋值，函数执行完自动赋值</param>
+        /// <returns>T的集合</returns>
+        public static List<T> ToPageList<T>(this Queryable<T> queryable, int pageIndex, int pageSize, ref int pageCount)
+        {
+            var reval = queryable.ToPageList(pageIndex, pageSize);
+            pageCount = queryable.Count();
+            return reval;
+        }
+
+        /// <summary>
         /// 将Queryable转换为Json
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
@@ -898,6 +914,46 @@ namespace SQLiteSugar
         public static string ToJson<T>(this Queryable<T> queryable)
         {
             return JsonConverter.DataTableToJson(ToDataTable<T>(queryable), queryable.DB.SerializerDateFormat);
+        }
+
+
+        /// <summary>
+        /// 将Queryable转换为分页后的Json
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <returns>Json</returns>
+        public static string ToJsonPage<T>(this Queryable<T> queryable, int pageIndex, int pageSize)
+        {
+            if (queryable.OrderByValue.IsNullOrEmpty())
+            {
+                throw new Exception("分页必需使用.Order排序");
+            }
+            if (pageIndex == 0)
+                pageIndex = 1;
+            queryable.Skip = (pageIndex - 1) * pageSize;
+            queryable.Take = pageSize;
+            var reval = queryable.ToJson();
+            queryable = null;
+            return reval;
+        }
+
+        /// <summary>
+        /// 将Queryable转换为分页后的Json
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <param name="pageCount">pageCount无需赋值，函数执行完自动赋值</param>
+        /// <returns>Json</returns>
+        public static string ToJsonPage<T>(this Queryable<T> queryable, int pageIndex, int pageSize, ref int pageCount)
+        {
+            var reval = queryable.ToJsonPage(pageIndex, pageSize);
+            pageCount = queryable.Count();
+            return reval;
         }
 
         /// <summary>
@@ -927,6 +983,46 @@ namespace SQLiteSugar
         }
 
         /// <summary>
+        /// 将Queryable转换为分页后的Dynamic
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <returns>Dynamic</returns>
+        public static dynamic ToDynamicPage<T>(this Queryable<T> queryable, int pageIndex, int pageSize)
+        {
+            if (queryable.OrderByValue.IsNullOrEmpty())
+            {
+                throw new Exception("分页必需使用.Order排序");
+            }
+            if (pageIndex == 0)
+                pageIndex = 1;
+            queryable.Skip = (pageIndex - 1) * pageSize;
+            queryable.Take = pageSize;
+            var reval = queryable.ToDynamic();
+            queryable = null;
+            return reval;
+        }
+
+        /// <summary>
+        /// 将Queryable转换为分页后的Dynamic
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <param name="pageCount">pageCount无需赋值，函数执行完自动赋值</param>
+        /// <returns>Dynamic</returns>
+        public static dynamic ToDynamicPage<T>(this Queryable<T> queryable, int pageIndex, int pageSize, ref int pageCount)
+        {
+            var reval = queryable.ToDynamicPage(pageIndex, pageSize);
+            pageCount = queryable.Count();
+            return reval;
+        }
+
+
+        /// <summary>
         /// 将Queryable转换为DataTable
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
@@ -940,6 +1036,48 @@ namespace SQLiteSugar
             sbSql = null;
             return dataTable;
         }
+
+        /// <summary>
+        /// 将Queryable转换为分页后的DataTable
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <returns>DataTable</returns>
+        public static DataTable ToDataTablePage<T>(this Queryable<T> queryable, int pageIndex, int pageSize)
+        {
+            if (queryable.OrderByValue.IsNullOrEmpty())
+            {
+                throw new Exception("分页必需使用.Order排序");
+            }
+            if (pageIndex == 0)
+                pageIndex = 1;
+            queryable.Skip = (pageIndex - 1) * pageSize;
+            queryable.Take = pageSize;
+            StringBuilder sbSql = SqlSugarTool.GetQueryableSql<T>(queryable);
+            var dataTable = queryable.DB.GetDataTable(sbSql.ToString(), queryable.Params.ToArray());
+            queryable = null;
+            sbSql = null;
+            return dataTable;
+        }
+
+        /// <summary>
+        /// 将Queryable转换为分页后的DataTable
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="queryable">查询对象</param>
+        /// <param name="pageIndex">当前页码</param>
+        /// <param name="pageSize">每页显示数量</param>
+        /// <param name="pageCount">pageCount无需赋值，函数执行完自动赋值</param>
+        /// <returns>DataTable</returns>
+        public static DataTable ToDataTablePage<T>(this Queryable<T> queryable, int pageIndex, int pageSize, ref int pageCount)
+        {
+            var reval = queryable.ToDataTablePage(pageIndex, pageSize);
+            pageCount = queryable.Count();
+            return reval;
+        }
+
 
         /// <summary>
         /// 将Queryable转换为分页后的List&lt;T&gt;集合
