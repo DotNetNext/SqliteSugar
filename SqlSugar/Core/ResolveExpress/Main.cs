@@ -135,6 +135,14 @@ namespace SQLiteSugar
             if (conExp != null&&fieldInfo!=null)
             {
                 dynInv = (fieldInfo).GetValue((me.Expression as ConstantExpression).Value);
+                if (fieldInfo.FieldType.IsEnum)
+                {
+                    dynInv = Convert.ToInt32(Enum.ToObject(fieldInfo.FieldType, dynInv));
+                    if (fieldInfo.FieldType.IsEnum)
+                    {
+                        dynInv = Convert.ToInt32(Enum.ToObject(fieldInfo.FieldType, dynInv));
+                    }
+                }
             }
             else
             {
