@@ -115,6 +115,21 @@ namespace SQLiteSugar
             }
             return null;
         }
+        /// <summary>
+        /// 根据表获取主键
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        internal static List<string> GetPrimaryKeyByTableNames(SqlSugarClient db, string tableName)
+        {
+            var ids = GetIdentitiesKeyByTableName(db, tableName);
+            if (ids.IsValuable())
+            {
+                return ids.Select(it=>it.Value).ToList();
+            }
+            return null;
+        }
   
 
         /// <summary>
