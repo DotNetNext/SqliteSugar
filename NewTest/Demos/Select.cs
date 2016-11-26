@@ -129,6 +129,7 @@ namespace NewTest.Demos
                 //SELECT Sex,Count=count(*)  FROM Student  WHERE 1=1  AND  (id < 20)    GROUP BY Sex --生成结果
 
 
+                List<string> ls = db.Queryable<Student>().Select(it => it.name).ToList();
 
                 //2表关联查询
                 var jList = db.Queryable<Student>()
