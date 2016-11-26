@@ -138,10 +138,6 @@ namespace SQLiteSugar
                 if (fieldInfo.FieldType.IsEnum)
                 {
                     dynInv = Convert.ToInt32(Enum.ToObject(fieldInfo.FieldType, dynInv));
-                    if (fieldInfo.FieldType.IsEnum)
-                    {
-                        dynInv = Convert.ToInt32(Enum.ToObject(fieldInfo.FieldType, dynInv));
-                    }
                 }
             }
             else
