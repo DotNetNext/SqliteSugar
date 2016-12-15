@@ -693,7 +693,7 @@ namespace SQLiteSugar
 
                     if (prop.PropertyType.IsEnum)
                     {
-                        val = (int)(val);
+                        val = Convert.ToInt64(val);
                     }
 
                     var par = new SQLiteParameter(SqlSugarTool.ParSymbol + propName, val);
@@ -1223,7 +1223,7 @@ namespace SQLiteSugar
                 var pkValue = type.GetProperty(pkClassPropName).GetValue(deleteObj, null);
                 if (pkValue.GetType().IsEnum)
                 {
-                    pkValue = pkValue.ObjToInt();
+                    pkValue =Convert.ToInt64(pkValue);
                 }
                 Check.Exception(pkValue == DBNull.Value, typeName + "主键的值不能为DBNull.Value。");
                 whereString += string.Format(" AND {0}={1} ", pkName.GetTranslationSqlName(), pkName.GetSqlParameterName());
